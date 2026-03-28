@@ -1,0 +1,10 @@
+{
+  "prompt": "为校园门户登录页生成一张横向主视觉背景图。画面是简约清新的校园清晨场景：林荫道、教学楼、树影、草地与淡蓝色晨雾，整体采用冷淡蓝、雾白和少量青绿色，构图干净安静，适合做登录页背景。不要人物、不要车辆、不要文字、不要 logo、不要路牌特写、不要 UI 面板、不要水印、不要卡片。画面中心略虚化，保留中间区域给居中登录卡片使用。",
+  "reference_images": [],
+  "image_urls": [
+    "https://dashscope-7c2c.oss-accelerate.aliyuncs.com/7d/0a/20260328/4a85cb8a/4c7bf5c0-f647-4ad7-a1e8-0c37b4db02e1.png?Expires=1775291579&OSSAccessKeyId=LTAI5tPxpiCM2hjmWrFXrym1&Signature=wUbjyWrjPe%2FLX4kEbEM8LlD4anY%3D"
+  ],
+  "saved_paths": [
+    "/home/administrator/web_learning/frontend/public/generated/login-hero-1.png"
+  ]
+}

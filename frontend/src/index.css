@@ -1,0 +1,40 @@
+:root {
+  font-family: 'Manrope', 'Segoe UI', sans-serif;
+  color: #12263b;
+  background: #f2f7fb;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: #f2f7fb;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top, rgba(117, 183, 255, 0.16), transparent 34%),
+    #eef4f9;
+}
+
+button,
+input,
+a {
+  font: inherit;
+}
+
+img {
+  max-width: 100%;
+}
+
+#root {
+  min-height: 100vh;
+}

@@ -1,0 +1,26 @@
+# Node / frontend
+frontend/node_modules/
+frontend/dist/
+
+# Python / backend
+backend/.venv/
+backend/__pycache__/
+backend/.pytest_cache/
+backend/**/*.pyc
+
+# Environment and secrets
+backend/.env
+.env
+
+# Local runtime artifacts
+frontend/.vite-dev.pid
+frontend/.vite-dev.log
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+
+# Local agent state
+.codex/
+.agents/
