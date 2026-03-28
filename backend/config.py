@@ -19,8 +19,15 @@ class Settings:
         self.smtp_username = os.getenv("SMTP_USERNAME", "")
         self.smtp_password = os.getenv("SMTP_PASSWORD", "")
         self.smtp_from = os.getenv("SMTP_FROM", self.smtp_username)
+        self.redis_url = os.getenv("REDIS_URL", "redis://127.0.0.1:6380/0")
         self.verification_code_ttl_seconds = int(
-            os.getenv("VERIFICATION_CODE_TTL_SECONDS", "600")
+            os.getenv("VERIFICATION_CODE_TTL_SECONDS", "300")
+        )
+        self.verification_rate_limit_window_seconds = int(
+            os.getenv("VERIFICATION_RATE_LIMIT_WINDOW_SECONDS", "600")
+        )
+        self.verification_rate_limit_max_sends = int(
+            os.getenv("VERIFICATION_RATE_LIMIT_MAX_SENDS", "5")
         )
         self.long_lived_session_days = int(
             os.getenv("LONG_LIVED_SESSION_DAYS", "3650")

@@ -1,8 +1,9 @@
 from contextlib import asynccontextmanager
 from collections.abc import Callable
 
-from fastapi import Depends, FastAPI, HTTPException, Response, status
+from fastapi import Depends, FastAPI, HTTPException, Request, Response, status
 from fastapi.middleware.cors import CORSMiddleware
+from redis import Redis
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -13,19 +14,27 @@ from models import UserAccount
 from schemas import ApiMessageResponse, LoginRequest, LoginResponse, RegisterRequest, SendCodeRequest
 from security import hash_password, verify_password
 from verification_store import (
-    clear_verification_code,
     generate_verification_code,
-    save_verification_code,
-    verify_code,
+    RedisVerificationStore,
+    VerificationRateLimitExceeded,
+    VerificationStore,
 )
 
 
 @asynccontextmanager
-async def lifespan(_: FastAPI):
+async def lifespan(application: FastAPI):
     """在应用启动时初始化数据库表结构。"""
 
     init_database()
+    redis_client = Redis.from_url(settings.redis_url, decode_responses=True)
+    application.state.verification_store = RedisVerificationStore(
+        redis_client=redis_client,
+        ttl_seconds=settings.verification_code_ttl_seconds,
+        rate_limit_window_seconds=settings.verification_rate_limit_window_seconds,
+        rate_limit_max_sends=settings.verification_rate_limit_max_sends,
+    )
     yield
+    redis_client.close()
 
 
 app = FastAPI(title="热统小组接口", version="0.2.0", lifespan=lifespan)
@@ -48,11 +57,18 @@ def get_email_sender() -> Callable[[str, str], None]:
     return send_verification_email
 
 
+def get_verification_store(request: Request) -> VerificationStore:
+    """从应用状态中读取当前验证码存储实现。"""
+
+    return request.app.state.verification_store
+
+
 @app.post("/api/register/send-code", response_model=ApiMessageResponse)
 def send_register_code(
     payload: SendCodeRequest,
     db: Session = Depends(get_db),
     email_sender: Callable[[str, str], None] = Depends(get_email_sender),
+    verification_store: VerificationStore = Depends(get_verification_store),
 ):
     """校验账号与邮箱后发送注册验证码。"""
 
@@ -62,12 +78,17 @@ def send_register_code(
     if existing_user is not None:
         raise HTTPException(status_code=409, detail="当前账号已存在")
 
+    try:
+        verification_store.ensure_send_allowed(payload.email)
+    except VerificationRateLimitExceeded as exc:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="10 分钟内最多发送 5 次验证码，请稍后再试",
+            headers={"Retry-After": str(exc.retry_after_seconds)},
+        ) from exc
+
     verification_code = generate_verification_code()
-    save_verification_code(
-        payload.email,
-        verification_code,
-        settings.verification_code_ttl_seconds,
-    )
+    verification_store.save_verification_code(payload.email, verification_code)
     email_sender(payload.email, verification_code)
 
     return {
@@ -77,7 +98,11 @@ def send_register_code(
 
 
 @app.post("/api/register", response_model=ApiMessageResponse)
-def register_user(payload: RegisterRequest, db: Session = Depends(get_db)):
+def register_user(
+    payload: RegisterRequest,
+    db: Session = Depends(get_db),
+    verification_store: VerificationStore = Depends(get_verification_store),
+):
     """完成注册校验并将账号密码写入数据库。"""
 
     if payload.password != payload.confirm_password:
@@ -89,7 +114,7 @@ def register_user(payload: RegisterRequest, db: Session = Depends(get_db)):
     if existing_user is not None:
         raise HTTPException(status_code=409, detail="当前账号已存在")
 
-    if not verify_code(payload.email, payload.verification_code):
+    if not verification_store.verify_code(payload.email, payload.verification_code):
         raise HTTPException(status_code=400, detail="验证码错误或已过期")
 
     user = UserAccount(
@@ -98,7 +123,7 @@ def register_user(payload: RegisterRequest, db: Session = Depends(get_db)):
     )
     db.add(user)
     db.commit()
-    clear_verification_code(payload.email)
+    verification_store.clear_verification_code(payload.email)
 
     return {
         "success": True,

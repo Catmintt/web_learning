@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import './App.css'
+import { Toaster } from 'sonner'
 import fallbackHeroImg from './assets/hero.png'
 import { loginAccount } from './services/auth'
 import { PasswordField } from './components/PasswordField'
@@ -176,6 +177,12 @@ function App() {
       <RegisterDialog
         isOpen={isRegisterDialogOpen}
         onClose={() => setIsRegisterDialogOpen(false)}
+      />
+      <Toaster
+        position="top-center"
+        richColors
+        closeButton
+        duration={3000}
       />
     </main>
   )

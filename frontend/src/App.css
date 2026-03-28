@@ -237,6 +237,13 @@
   box-shadow: 0 0 0 0.22rem rgba(194, 70, 70, 0.1);
 }
 
+.field-error-message {
+  margin: -0.15rem 0 0;
+  color: #b34848;
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
 .form-meta {
   display: flex;
   align-items: center;
@@ -415,7 +422,7 @@
 }
 
 .register-description,
-.register-success-description {
+.register-description {
   margin: 0;
   color: #69829a;
   font-size: 0.92rem;
@@ -424,100 +431,6 @@
 
 .register-submit-button {
   margin-top: 0.2rem;
-}
-
-.register-success-state {
-  display: grid;
-  justify-items: center;
-  gap: 0.7rem;
-  padding: 1.6rem 0.5rem 0.4rem;
-  text-align: center;
-}
-
-.register-success-title {
-  margin: 0;
-  color: #1b4c36;
-  font-size: 1.1rem;
-  font-weight: 700;
-}
-
-.success-checkmark {
-  position: relative;
-  width: 4.7rem;
-  height: 4.7rem;
-}
-
-.success-checkmark-circle {
-  position: absolute;
-  inset: 0;
-  border: 3px solid rgba(39, 163, 95, 0.2);
-  border-radius: 999px;
-  background: rgba(221, 247, 229, 0.92);
-  animation: success-pop 320ms ease forwards;
-}
-
-.success-checkmark-stem,
-.success-checkmark-kick {
-  position: absolute;
-  background: #1da95d;
-  border-radius: 999px;
-  transform-origin: left top;
-}
-
-.success-checkmark-stem {
-  top: 2.45rem;
-  left: 1.35rem;
-  width: 0.45rem;
-  height: 1.35rem;
-  transform: rotate(45deg) scaleY(0);
-  animation: success-stem 320ms ease forwards;
-  animation-delay: 140ms;
-}
-
-.success-checkmark-kick {
-  top: 2.9rem;
-  left: 1.68rem;
-  width: 1.75rem;
-  height: 0.45rem;
-  transform: rotate(-45deg) scaleX(0);
-  animation: success-kick 320ms ease forwards;
-  animation-delay: 220ms;
-}
-
-@keyframes success-pop {
-  from {
-    opacity: 0;
-    transform: scale(0.84);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes success-stem {
-  from {
-    opacity: 0;
-    transform: rotate(45deg) scaleY(0);
-  }
-
-  to {
-    opacity: 1;
-    transform: rotate(45deg) scaleY(1);
-  }
-}
-
-@keyframes success-kick {
-  from {
-    opacity: 0;
-    transform: rotate(-45deg) scaleX(0);
-  }
-
-  to {
-    opacity: 1;
-    transform: rotate(-45deg) scaleX(1);
-  }
 }
 
 @keyframes card-rise {

@@ -8,12 +8,13 @@ type PasswordFieldProps = {
   placeholder: string
   autoComplete?: string
   hasError?: boolean
+  errorMessage?: string
   disabled?: boolean
   onChange: (value: string) => void
 }
 
 /**
- * 渲染带显隐按钮的密码输入框，支持点击切换与按住临时查看。
+ * 渲染带显隐按钮的密码输入框，并在需要时显示字段错误。
  */
 export function PasswordField({
   id,
@@ -23,10 +24,12 @@ export function PasswordField({
   placeholder,
   autoComplete,
   hasError = false,
+  errorMessage = '',
   disabled = false,
   onChange,
 }: PasswordFieldProps) {
   const [isVisible, setIsVisible] = useState(false)
+  const shouldShowError = hasError || Boolean(errorMessage)
 
   /**
    * 处理普通点击，切换密码显示状态。
@@ -48,7 +51,7 @@ export function PasswordField({
           name={name}
           type={isVisible ? 'text' : 'password'}
           autoComplete={autoComplete}
-          className={hasError ? 'field-input field-input-error' : 'field-input'}
+          className={shouldShowError ? 'field-input field-input-error' : 'field-input'}
           value={value}
           disabled={disabled}
           onChange={(event) => onChange(event.target.value)}
@@ -78,6 +81,11 @@ export function PasswordField({
           </svg>
         </button>
       </div>
+      {errorMessage ? (
+        <p className="field-error-message" role="alert">
+          {errorMessage}
+        </p>
+      ) : null}
     </label>
   )
 }

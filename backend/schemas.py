@@ -40,8 +40,8 @@ class RegisterRequest(SendCodeRequest):
     @field_validator("password")
     @classmethod
     def validate_password(cls, value: str) -> str:
-        if len(value) < 8:
-            raise ValueError("密码至少需要 8 位")
+        if not value or not value.strip():
+            raise ValueError("密码不能为空或纯空格")
         return value
 
 
